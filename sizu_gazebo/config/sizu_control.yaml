@@ -1,0 +1,146 @@
+# Gazebo ROS Control PID增益参数
+gazebo_ros_control:
+  pid_gains:
+    coxa_joint_FL:
+      p: 100.0
+      i: 0.00
+      d: 5.0
+    coxa_joint_RL:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+    coxa_joint_FR:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+    coxa_joint_RR:
+      p: 100.0
+      i: 0.0
+      d: 5.0
+    femur_joint_FL:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+    femur_joint_RL:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+    femur_joint_FR:
+      p: 100.0
+      i: 0.0
+      d: 5.0
+    femur_joint_RR:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+    tibia_joint_FL:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+    tibia_joint_RL:
+      p: 100.0
+      i: 0.0
+      d: 5.0
+    tibia_joint_FR:
+      p: 300.0
+      i: 0.01
+      d: 8.0
+    tibia_joint_RR:
+      p: 300.0
+      i: 0.01
+      d: 8.0
+
+# 关节状态控制器
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  # 发布关节状态的频率（Hz）。50~100 足够，过高会增加负载
+  publish_rate: 50
+
+# 轨迹控制器 - 控制所有腿部关节
+leg_trajectory_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    # 前左腿
+    - coxa_joint_FL
+    - femur_joint_FL
+    - tibia_joint_FL
+    # 后左腿
+    - coxa_joint_RL
+    - femur_joint_RL
+    - tibia_joint_RL
+    # 前右腿
+    - coxa_joint_FR
+    - femur_joint_FR
+    - tibia_joint_FR
+    # 后右腿
+    - coxa_joint_RR
+    - femur_joint_RR
+    - tibia_joint_RR
+
+  constraints:
+    # 轨迹末端目标允许的达成时间容差（s）
+    goal_time: 0.5
+    stopped_velocity_tolerance: 0.01
+    
+    # 各个关节的约束
+    coxa_joint_FL: {trajectory: 0.5, goal: 0.3}
+    femur_joint_FL: {trajectory: 0.5, goal: 0.3}
+    tibia_joint_FL: {trajectory: 0.5, goal: 0.3}
+    
+    coxa_joint_RL: {trajectory: 0.5, goal: 0.3}
+    femur_joint_RL: {trajectory: 0.5, goal: 0.3}
+    tibia_joint_RL: {trajectory: 0.5, goal: 0.3}
+    
+    coxa_joint_FR: {trajectory: 0.5, goal: 0.3}
+    femur_joint_FR: {trajectory: 0.5, goal: 0.3}
+    tibia_joint_FR: {trajectory: 0.5, goal: 0.3}
+    
+    coxa_joint_RR: {trajectory: 0.5, goal: 0.3}
+    femur_joint_RR: {trajectory: 0.5, goal: 0.3}
+    tibia_joint_RR: {trajectory: 0.5, goal: 0.3}
+
+  # 控制器状态发布频率与 action 监控频率（Hz）
+  state_publish_rate: 50
+  action_monitor_rate: 10
+
+  # 控制器在接收到新轨迹时对旧轨迹的收尾时长，以及保持姿态的持续时间（s）
+  stop_trajectory_duration: 0.25
+  hold_trajectory_duration: 0.25
+
+  # 是否允许只包含部分关节的目标（通常建议 false 确保与发布端一致）
+  allow_partial_joints_goal: false
+
+  # PID增益参数
+  gains:
+    coxa_joint_FL: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    femur_joint_FL: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    tibia_joint_FL: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    
+    coxa_joint_RL: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    femur_joint_RL: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    tibia_joint_RL: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    
+    coxa_joint_FR: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    femur_joint_FR: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    tibia_joint_FR: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    
+    coxa_joint_RR: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    femur_joint_RR: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+    tibia_joint_RR: {p: 200.0, d: 5.0, i: 0.01, i_clamp: 1.0}
+
+# 可选：单独的腿部轨迹控制器，用于更精细的控制
+# front_left_leg_controller:
+#   type: position_controllers/JointTrajectoryController
+#   joints:
+#     - coxa_joint_FL
+#     - femur_joint_FL
+#     - tibia_joint_FL
+#   constraints:
+#     goal_time: 0.3
+#     coxa_joint_FL: {trajectory: 0.2, goal: 0.1}
+#     femur_joint_FL: {trajectory: 0.2, goal: 0.1}
+#     tibia_joint_FL: {trajectory: 0.2, goal: 0.1}
+#   gains:
+#     coxa_joint_FL: {p: 300.0, d: 10.0, i: 5.0, i_clamp: 1.0}
+#     femur_joint_FL: {p: 300.0, d: 10.0, i: 5.0, i_clamp: 1.0}
+#     tibia_joint_FL: {p: 300.0, d: 10.0, i: 5.0, i_clamp: 1.0}
