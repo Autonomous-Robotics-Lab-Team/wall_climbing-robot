@@ -245,20 +245,25 @@
             std::lock_guard<std::mutex> lock(state_mutex_);
             ang_vel = body_angular_velocity;
         }
-        if (ang_vel.isZero(1e-6)) {
+        if (ang_vel.isZero(1e-6) ) {
             gait_time_rotate_ = 0.0;
             leg_sign.clear();
             return 0;
         }
 
         const double step = (loop_dt_ > 0.0) ? loop_dt_ : dt;
-        const double phase = std::fmod(gait_time_rotate_, T);
-        // 让每个完整步态周期完成 ang_vel*z * T 的转角；去掉额外放大，保持与指令一致
-            const double yaw_step = ang_vel[2] * T;
+        if (gait_time_rotate_ >= (T+0.1)) {
+                gait_time_rotate_ = 0;
+        }
+        const double phase = std::fmod(gait_time_rotate_, T+0.1);
+        // const double phase = gait_time_rotate_;
+
+        const double yaw_step = 2*ang_vel[2] * T;
 
         Eigen::AngleAxisd rot_vec(yaw_step, Eigen::Vector3d::UnitZ());
         Eigen::Matrix3d R = rot_vec.toRotationMatrix();
         Eigen::Matrix<double,3,4> current_position = R * init_position - init_position;
+        // ROS_INFO_STREAM("phase:" << phase << " Current rotated foot positions:\n" << current_position);
 
         if (phase <= T/2.0) {
             FL_position_body = 2*phase/T*current_position.block(0,0,3,1);
@@ -268,7 +273,6 @@
             RL_position_body.setZero();
             FR_position_body.setZero();
             leg_sign = {0,3};
-            ROS_INFO_STREAM("FL pos: " << FL_position_body.transpose() << ", RR pos: " << RR_position_body.transpose());
         } else {
             const double sub_phase = phase - T/2.0;
             FL_position_body.setZero();
@@ -287,9 +291,7 @@
         move.commandSend(All_Feet_position,{0,1,2,3});
 
         gait_time_rotate_ += step;
-        if (gait_time_rotate_ >= T) {
-            gait_time_rotate_ = std::fmod(gait_time_rotate_, T);
-        }
+        
         return 1;     
     }
 
@@ -307,12 +309,6 @@
         if (vel.isZero(1e-6)) {
             gait_time_move_ = 0.0;
             leg_sign.clear();
-            FL_position_body.setZero();
-            RR_position_body.setZero();
-            RL_position_body.setZero();
-            FR_position_body.setZero();
-            All_Feet_position.setZero();
-            move.commandSend(All_Feet_position,{0,1,2,3});
             return 0;
         }
 
@@ -322,40 +318,29 @@
         RR_velocity_world = vel;
 
         const double step = (loop_dt_ > 0.0) ? loop_dt_ : dt;
+        if (gait_time_move_ >= (T-0.1)) {
+                gait_time_move_ = 0;
+        }
         const double phase = std::fmod(gait_time_move_, T);
  
-
+        // ROS_INFO_STREAM("phase:" << phase);
         if (phase <= T/2.0) {
-
-            
-            // Swing: -Offset -> +Offset
-            FL_position_body = phase*FL_velocity_world;
-            RR_position_body = phase*RR_velocity_world;
-            
-            // Add height (sine wave)
-            double height = high_hop * sin(phase * M_PI / (T/2.0));
+            FL_position_body = phase*FL_velocity_world*sin(phase * M_PI / (T/2.0));
+            RR_position_body = phase*RR_velocity_world*sin(phase * M_PI / (T/2.0));
+            double height = high_hop * cos(phase * M_PI / (T/2.0));
             FL_position_body[2] += height;
             RR_position_body[2] += height;
-            
-            // Stance: +Offset -> -Offset
-            RL_position_body = -phase*RL_velocity_world;
-            FR_position_body = -phase*FR_velocity_world;
-            
+            RL_position_body = -phase*RL_velocity_world*sin(phase * M_PI / (T/2.0));
+            FR_position_body = -phase*FR_velocity_world*sin(phase * M_PI / (T/2.0));
             leg_sign = {0, 1, 2, 3};
         } else {
-            // Swing: -Offset -> +Offset
-            RL_position_body = (phase - T/2.0)*RL_velocity_world;
-            FR_position_body = (phase - T/2.0)*FR_velocity_world;
-
-            // Add height (sine wave)
-            double height = high_hop * sin((phase - T/2.0) * M_PI / (T/2.0));
+            RL_position_body = (phase - T/2.0)*RL_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
+            FR_position_body = (phase - T/2.0)*FR_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
+            double height = high_hop * cos((phase - T/2.0) * M_PI / (T/2.0));
             RL_position_body[2] += height;
             FR_position_body[2] += height;
-
-            // Stance: +Offset -> -Offset
-            FL_position_body = -(phase - T/2.0)*FL_velocity_world;
-            RR_position_body = -(phase - T/2.0)*RR_velocity_world;
-            
+            FL_position_body = -(phase - T/2.0)*FL_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
+            RR_position_body = -(phase - T/2.0)*RR_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
             leg_sign = {0, 1, 2, 3};
         }
         All_Feet_position.block(0,0,3,1)=FL_position_body;
@@ -363,11 +348,9 @@
         All_Feet_position.block(0,2,3,1)=FR_position_body;
         All_Feet_position.block(0,3,3,1)=RR_position_body;
         move.commandSend(All_Feet_position, leg_sign);
+        // ROS_INFO_STREAM("All_Feet_Position:\n" << All_Feet_position);
 
         gait_time_move_ += step;
-        if (gait_time_move_ >= T) {
-            gait_time_move_ = std::fmod(gait_time_move_, T);
-        }
         return 1;
     }
 
@@ -401,7 +384,7 @@
                     if (c != last_key_) {
                         last_key_ = c;
                         switch (c) {
-                            case 'w': body_velocity_world <<  0.6,  0.0, 0.0;  
+                            case 'w': body_velocity_world <<  0.4,  0.0, 0.0;  
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
@@ -409,7 +392,7 @@
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
-                            case 'a': body_velocity_world <<  0.0,  0.2, 0.0;  
+                            case 'a': body_velocity_world <<  0.0,  0.6, 0.0;  
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
@@ -417,10 +400,10 @@
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
-                            case 'q': body_angular_velocity << 0.0, 0.0,  0.6; 
+                            case 'q': body_angular_velocity << 0.0, 0.0, 0.6; 
                                       body_velocity_world.setZero();
                                       break;
-                            case 'e': body_angular_velocity << 0.0, 0.0, -0.6; 
+                            case 'e': body_angular_velocity << 0.0, 0.0,-0.2; 
                                       body_velocity_world.setZero();
                                       break;
                             case 'x': body_velocity_world.setZero();
@@ -467,7 +450,7 @@
             dt = 0.05;
         }
 
-        target_hz_ = std::clamp(1.0 / dt, 10.0, 100.0);
+        target_hz_ = std::clamp(1.0 / dt, 1.0, 100.0);
         const double period = 1.0 / target_hz_;
         ROS_INFO("Navigation loop freq set to %.1f Hz (dt=%.3f)", target_hz_, period);
 

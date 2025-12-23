@@ -115,6 +115,7 @@ public:
         std::mutex state_mutex_;
         double gait_time_move_ = 0.0;
         double gait_time_rotate_ = 0.0;
+        Eigen::Vector3d active_rotate_vel_ = Eigen::Vector3d::Zero();
 
         // 日志与滤波
         Eigen::Vector3d prev_lin_vel_ = Eigen::Vector3d::Zero();

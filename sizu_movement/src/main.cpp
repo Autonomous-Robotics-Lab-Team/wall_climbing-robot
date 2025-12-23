@@ -3,8 +3,8 @@
 Parameters::Parameters()
 :rate_(10){
     // 初始化参数的代码
-    T  = 0.4;
-    dt = 0.1;
+    T  = 0.6;
+    dt = 0.15;
     rate_ = ros::Rate(20);
     high_hop = 0.08;
 
