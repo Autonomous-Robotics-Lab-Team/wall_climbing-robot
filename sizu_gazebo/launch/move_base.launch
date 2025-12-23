@@ -7,7 +7,7 @@
     <rosparam file="$(find sizu_gazebo)/config/base_local_planner_params.yaml" command="load" />
   </node>
 
-  <param name="use_sim_time" value="true"/>
+  <param name="use_sim_time" value="false"/>
 
   <include file="$(find sizu_gazebo)/launch/gazebo.launch"/>
 

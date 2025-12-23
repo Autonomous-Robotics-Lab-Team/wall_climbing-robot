@@ -36,11 +36,7 @@
     <node if="$(arg run_trajectory_example)" name="trajectory_example" pkg="sizu_gazebo" type="trajectory_example_node" output="screen"/>
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-
-    <!-- 启动运动控制节点 -->
-    <node name="sizu_movement" pkg="sizu_movement" type="main" output="screen">
-        <param name="base_frame_id" value="base" />
-    </node>
+ 
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sizu_gazebo)/config/sizu.rviz" />
 

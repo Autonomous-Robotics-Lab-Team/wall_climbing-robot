@@ -8,18 +8,18 @@ recovery_behavior_enabled: true
 clearing_rotation_allowed: true
 
 # 控制器循环频率（Hz），建议与仿真/控制环同步
-controller_frequency: 20.0
+controller_frequency: 4.0
 
 TrajectoryPlannerROS:
    global_frame_id: map
    # 速度/加速度限制（根据机器人能力调整）
-   max_vel_x: 0.6            # 前进最大线速度（m/s）
-   min_vel_x: -0.6           # 后退允许的最小速度（m/s），负值允许后退
-   max_vel_y: 0.6            # 侧向速度（若为非全向机器人，可设为 0）
-   min_vel_y: -0.6           # 侧向速度下限（m/s）
-   max_vel_theta: 0.4        # 角速度上限（rad/s）
-   min_vel_theta: -0.4       # 角速度下限（rad/s）
-   min_in_place_vel_theta: 0.3  # 原地旋转的最小角速度（rad/s）
+   max_vel_x: 0.4            # 前进最大线速度（m/s）
+   min_vel_x: -0.4           # 后退允许的最小速度（m/s），负值允许后退
+   max_vel_y: 0.4            # 侧向速度（若为非全向机器人，可设为 0）
+   min_vel_y: -0.4           # 侧向速度下限（m/s）
+   max_vel_theta: 0.6        # 角速度上限（rad/s）
+   min_vel_theta: -0.6       # 角速度下限（rad/s）
+   min_in_place_vel_theta: 0.2  # 原地旋转的最小角速度（rad/s）
    escape_vel: -0.3
 
    # 加速度限制，防止速度突变
@@ -63,7 +63,7 @@ TrajectoryPlannerROS:
    # 距离偏置（越大越倾向于沿已生成路径移动，越小越接近目标点）
    path_distance_bias: 50.0
    goal_distance_bias: 10.0
-   occdist_scale: 0.02
+   occdist_scale: 0.1
    simple_attractor: false
 
    # 可选：如果你希望更保守地避免障碍，增大 occdist_scale 或增大 path_distance_bias
