@@ -6,4 +6,6 @@
 
 2.roslaunch sizu_gazebo move_base.launch
 
+3.rosrun sizu_movement main
+
 然后可用键盘移动或者在rviz中执行导航
