@@ -64,8 +64,8 @@ using namespace GPIO; // optional
         
         // 控制器命令发布者
         // leg_trajectory_controller expects a JointTrajectory on topic "leg_trajectory_controller/command"
-        pub_trajectory_ = nh_.advertise<trajectory_msgs::JointTrajectory>("leg_trajectory_controller/command", 10);
-        ROS_INFO("Initialized publisher for %s", "leg_trajectory_controller/command");
+        pub_trajectory_ = nh_.advertise<trajectory_msgs::JointTrajectory>("/sizu/leg_trajectory_controller/command", 10);
+        ROS_INFO("Initialized publisher for %s", "/sizu/leg_trajectory_controller/command");
         traj_msg.header.stamp = ros::Time::now();
         // Use joint names that match the controller (with suffix _joint)
         traj_msg.joint_names = {

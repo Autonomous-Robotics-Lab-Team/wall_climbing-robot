@@ -1,9 +1,10 @@
 <robot name="sizu" xmlns:xacro="http://wiki.ros.org/xacro">
     <xacro:include filename="sizu.urdf.xacro" />
     <xacro:include filename="sizu_transmission.xacro" />
+    <xacro:include filename="adhesion.xacro" />
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotNamespace>/</robotNamespace>
+            <robotNamespace>/sizu</robotNamespace>
             <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
         </plugin>
         <plugin name="collision_visualizer" filename="libcollision_map_creator.so"/>
@@ -18,24 +19,24 @@
          </surface>
         </collision>
     </gazebo>
-    <gazebo reference="foot_FL">
-      <mu1>0.6</mu1>
-      <mu2>0.6</mu2>
+    <gazebo reference="tibia_FL">
+      <mu1>1</mu1>
+      <mu2>1</mu2>
     </gazebo>
 
-    <gazebo reference="foot_RL">
-      <mu1>0.6</mu1>
-      <mu2>0.6</mu2>
+    <gazebo reference="tibia_RL">
+      <mu1>1</mu1>
+      <mu2>1</mu2>
     </gazebo>
 
-    <gazebo reference="foot_FR">
-      <mu1>0.6</mu1>
-      <mu2>0.6</mu2>
+    <gazebo reference="tibia_FR">
+      <mu1>1</mu1>
+      <mu2>1</mu2>
     </gazebo>
 
-    <gazebo reference="foot_RR">
-      <mu1>0.6</mu1>
-      <mu2>0.6</mu2>
+    <gazebo reference="tibia_RR">
+      <mu1>1</mu1>
+      <mu2>1</mu2>
     </gazebo>
 
     <gazebo reference="lidar_link">
@@ -64,7 +65,7 @@
         </noise>
       </ray>
       <plugin name="gazebo_rplidar" filename="libgazebo_ros_laser.so">
-        <topicName>/scan</topicName>
+        <topicName>/sizu/scan</topicName>
         <frameName>lidar_link</frameName>
       </plugin>
     </sensor>

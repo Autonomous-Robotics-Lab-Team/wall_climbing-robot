@@ -15,8 +15,8 @@ TrajectoryPlannerROS:
    # 速度/加速度限制（根据机器人能力调整）
    max_vel_x: 0.4            # 前进最大线速度（m/s）
    min_vel_x: -0.4           # 后退允许的最小速度（m/s），负值允许后退
-   max_vel_y: 0.4            # 侧向速度（若为非全向机器人，可设为 0）
-   min_vel_y: -0.4           # 侧向速度下限（m/s）
+   max_vel_y: 0.0            # 侧向速度（若为非全向机器人，可设为 0）
+   min_vel_y: 0.0           # 侧向速度下限（m/s）
    max_vel_theta: 0.6        # 角速度上限（rad/s）
    min_vel_theta: -0.6       # 角速度下限（rad/s）
    min_in_place_vel_theta: 0.2  # 原地旋转的最小角速度（rad/s）
@@ -28,7 +28,7 @@ TrajectoryPlannerROS:
    acc_lim_theta: 2.0
 
    # 是否为全向机器人（有侧向移动能力），若没有可改为 false
-   holonomic_robot: true
+   holonomic_robot: false
    # 若为全向机器人，可保留侧向速度采样列表
    y_vels: [-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6]
 

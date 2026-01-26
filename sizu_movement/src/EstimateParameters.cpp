@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <termios.h>
 #include <sys/select.h>
+#include <std_msgs/Bool.h>
+#include <geometry_msgs/Twist.h>
+#include <sensor_msgs/Imu.h>
 
     EstimateParameters::EstimateParameters() : nh() {
         tcgetattr(STDIN_FILENO, &oldt_);
@@ -51,17 +54,18 @@
         quaternion.setIdentity();
         R_world_to_body.setIdentity();
         loop_dt_ = 0.0;
-        T = 0.4;
-        dt = 0.1;
-        high_hop = 0.08;
+        T = 1.2;
+        dt = 0.3;
+        compensation_velocity = 1.164;
+        high_hop = 0.06;
         _currentTime = ros::Time(0);
         _lastTime = ros::Time(0);
         last_key_time_ = ros::Time::now();
         last_cmd_time_ = ros::Time::now();
 
-        init_position << 0.230353, -0.230353,  0.230353, -0.230353,
-                         0.230353,  0.230353, -0.230353, -0.230353,
-                        -0.171562, -0.171562, -0.171562, -0.171562;
+        init_position <<  0.19111, -0.19111,  0.19111, -0.19111,
+                          0.19111,  0.19111, -0.19111, -0.19111,
+                         -0.17667, -0.17667, -0.17667, -0.17667;
 
         nh.param<std::string>("imu_topic", imu_topic_, std::string("/imu"));
         nh.param<bool>("use_imu_orientation", use_imu_orientation_, true);
@@ -212,7 +216,7 @@
         Eigen::Vector3d ang_vel;
         {
             std::lock_guard<std::mutex> lock(state_mutex_);
-            ang_vel =2 * body_angular_velocity;
+            ang_vel =0.7 * body_angular_velocity;
         }
 
         if (use_imu_orientation_ && imu_received_) {
@@ -234,6 +238,7 @@
         }
     }
 
+
     int EstimateParameters::GetFeetRotatePos() {
         if (T <= 0.0 || dt <= 0.0) {
             ROS_WARN_THROTTLE(2.0, "Invalid gait params T=%f dt=%f", T, dt);
@@ -252,20 +257,20 @@
         }
 
         const double step = (loop_dt_ > 0.0) ? loop_dt_ : dt;
-        if (gait_time_rotate_ >= (T+0.1)) {
+        if (gait_time_rotate_ >= (T+0.05)) {
                 gait_time_rotate_ = 0;
         }
         const double phase = std::fmod(gait_time_rotate_, T+0.1);
         // const double phase = gait_time_rotate_;
 
-        const double yaw_step = 2*ang_vel[2] * T;
+        const double yaw_step = ang_vel[2] * T;
 
         Eigen::AngleAxisd rot_vec(yaw_step, Eigen::Vector3d::UnitZ());
         Eigen::Matrix3d R = rot_vec.toRotationMatrix();
         Eigen::Matrix<double,3,4> current_position = R * init_position - init_position;
         // ROS_INFO_STREAM("phase:" << phase << " Current rotated foot positions:\n" << current_position);
 
-        if (phase <= T/2.0) {
+        if (phase <= (T/2.0)+0.05) {
             FL_position_body = 2*phase/T*current_position.block(0,0,3,1);
             RR_position_body = 2*phase/T*current_position.block(0,3,3,1);
             FL_position_body[2] = high_hop*sin(2*phase*M_PI/T);
@@ -273,6 +278,7 @@
             RL_position_body.setZero();
             FR_position_body.setZero();
             leg_sign = {0,3};
+  
         } else {
             const double sub_phase = phase - T/2.0;
             FL_position_body.setZero();
@@ -282,6 +288,7 @@
             RL_position_body[2] = high_hop*sin(2*sub_phase*M_PI/T);
             FR_position_body[2] = high_hop*sin(2*sub_phase*M_PI/T);
             leg_sign = {1,2};
+
         }
 
         All_Feet_position.block(0,0,3,1)=FL_position_body;
@@ -318,31 +325,33 @@
         RR_velocity_world = vel;
 
         const double step = (loop_dt_ > 0.0) ? loop_dt_ : dt;
-        if (gait_time_move_ >= (T-0.1)) {
+        if (gait_time_move_ >= (T-0.05)) {
                 gait_time_move_ = 0;
         }
-        const double phase = std::fmod(gait_time_move_, T);
- 
-        // ROS_INFO_STREAM("phase:" << phase);
-        if (phase <= T/2.0) {
-            FL_position_body = phase*FL_velocity_world*sin(phase * M_PI / (T/2.0));
-            RR_position_body = phase*RR_velocity_world*sin(phase * M_PI / (T/2.0));
-            double height = high_hop * cos(phase * M_PI / (T/2.0));
-            FL_position_body[2] += height;
-            RR_position_body[2] += height;
-            RL_position_body = -phase*RL_velocity_world*sin(phase * M_PI / (T/2.0));
-            FR_position_body = -phase*FR_velocity_world*sin(phase * M_PI / (T/2.0));
+        
+        leg_sign = {0,1,2,3};
+        
+        if (gait_time_move_ < (T/2.0-0.05)) {
+            FL_position_body = gait_time_move_*FL_velocity_world*sin(gait_time_move_ * M_PI / (T/2.0))*compensation_velocity;
+            RR_position_body = gait_time_move_*RR_velocity_world*sin(gait_time_move_ * M_PI / (T/2.0));
+            double height = high_hop * cos(gait_time_move_ * M_PI / (T/2.0));
+            FL_position_body[2] = height;
+            RR_position_body[2] = height;
+            RL_position_body = -gait_time_move_*RL_velocity_world*sin(gait_time_move_ * M_PI / (T/2.0))*compensation_velocity;
+            FR_position_body = -gait_time_move_*FR_velocity_world*sin(gait_time_move_ * M_PI / (T/2.0));
             leg_sign = {0, 1, 2, 3};
         } else {
-            RL_position_body = (phase - T/2.0)*RL_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
-            FR_position_body = (phase - T/2.0)*FR_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
-            double height = high_hop * cos((phase - T/2.0) * M_PI / (T/2.0));
-            RL_position_body[2] += height;
-            FR_position_body[2] += height;
-            FL_position_body = -(phase - T/2.0)*FL_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
-            RR_position_body = -(phase - T/2.0)*RR_velocity_world*sin((phase - T/2.0) * M_PI / (T/2.0));
+            RL_position_body = (gait_time_move_ - T/2.0)*RL_velocity_world*sin((gait_time_move_ - T/2.0) * M_PI / (T/2.0))*compensation_velocity;
+            FR_position_body = (gait_time_move_ - T/2.0)*FR_velocity_world*sin((gait_time_move_ - T/2.0) * M_PI / (T/2.0));
+            double height = high_hop * cos((gait_time_move_ - T/2.0) * M_PI / (T/2.0));
+            RL_position_body[2] = height;
+            FR_position_body[2] = height;
+            FL_position_body = -(gait_time_move_ - T/2.0)*FL_velocity_world*sin((gait_time_move_ - T/2.0) * M_PI / (T/2.0))*compensation_velocity;
+            RR_position_body = -(gait_time_move_ - T/2.0)*RR_velocity_world*sin((gait_time_move_ - T/2.0) * M_PI / (T/2.0));
             leg_sign = {0, 1, 2, 3};
         }
+
+
         All_Feet_position.block(0,0,3,1)=FL_position_body;
         All_Feet_position.block(0,1,3,1)=RL_position_body;
         All_Feet_position.block(0,2,3,1)=FR_position_body;
@@ -384,7 +393,7 @@
                     if (c != last_key_) {
                         last_key_ = c;
                         switch (c) {
-                            case 'w': body_velocity_world <<  0.4,  0.0, 0.0;  
+                            case 'w': body_velocity_world <<  0.2,  0.0, 0.0;  
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
@@ -392,7 +401,7 @@
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
-                            case 'a': body_velocity_world <<  0.0,  0.6, 0.0;  
+                            case 'a': body_velocity_world <<  0.0,  0.2, 0.0;  
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
@@ -400,7 +409,7 @@
                                       body_velocity_world *= lin_gain_;
                                       body_angular_velocity.setZero();
                                       break;
-                            case 'q': body_angular_velocity << 0.0, 0.0, 0.6; 
+                            case 'q': body_angular_velocity << 0.0, 0.0, 0.2; 
                                       body_velocity_world.setZero();
                                       break;
                             case 'e': body_angular_velocity << 0.0, 0.0,-0.2; 
@@ -497,6 +506,6 @@
         Odom_init();
 
         if(body_angular_velocity.isZero() && body_velocity_world.isZero()){
-        move.stand();
+            move.stand();
         }
     }

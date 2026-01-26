@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 为 tibia_FL 添加真空吸附功能 -->
+  <gazebo reference="tibia_FL">
+    <!-- 添加额外的碰撞元素（吸盘） -->
+    <collision name="suction_collision_FL">
+      <pose>0.31 0 0 0 0 0</pose>  <!-- 胫骨末端位置 -->
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+      <surface>
+        <contact>
+          <ode>
+            <kp>1000000</kp>
+            <kd>1000</kd>
+            <min_depth>0.001</min_depth>
+            <max_vel>0.1</max_vel>
+          </ode>
+        </contact>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    
+    <!-- 添加额外的视觉元素（吸盘） -->
+    <visual name="suction_visual_FL">
+      <pose>0.31 0 0 0 0 0</pose>
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/HighFriction</name>
+        </script>
+      </material>
+    </visual>
+    
+    <!-- 真空吸盘插件 -->
+    <plugin name="gazebo_ros_vacuum_gripper_FL" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/sizu</robotNamespace>
+      <topicName>/sizu/suction_cup_FL/switch</topicName>
+      <bodyName>tibia_FL</bodyName>
+      <disableCollisionsOnAttach>false</disableCollisionsOnAttach>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.001</minDistance>
+      <attachForce>150.0</attachForce>
+      <attachTorque>5.0</attachTorque>
+      <!-- 指定吸盘位置 -->
+      <suctionPosition>0.31 0 0</suctionPosition>
+      <!-- 吸盘方向（指向胫骨末端法线方向） -->
+      <suctionDirection>0 0 -1</suctionDirection>
+    </plugin>
+    
+    <!-- 提高摩擦系数以便于爬墙 -->
+    <material>Gazebo/HighFriction</material>
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <self_collide>false</self_collide>
+    <max_contacts>10</max_contacts>
+  </gazebo>
+  
+
+  <gazebo reference="tibia_FR">
+    <!-- 添加吸盘视觉和碰撞元素 -->
+    <collision name="suction_collision_FR">
+      <pose>0.31 0 0 0 0 0</pose>
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+    </collision>
+    <visual name="suction_visual_FR">
+      <pose>0.31 0 0 0 0 0</pose>
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/HighFriction</name>
+        </script>
+      </material>
+    </visual>
+    <!-- 真空吸盘插件 -->
+    <plugin name="gazebo_ros_vacuum_gripper_FR" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/sizu</robotNamespace>
+      <topicName>/sizu/suction_cup_FR/switch</topicName>
+      <bodyName>tibia_FR</bodyName>
+      <disableCollisionsOnAttach>false</disableCollisionsOnAttach>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.001</minDistance>
+      <attachForce>150.0</attachForce>
+      <attachTorque>5.0</attachTorque>
+      <suctionPosition>0.31 0 0</suctionPosition>
+      <suctionDirection>0 0 -1</suctionDirection>
+    </plugin>
+  </gazebo>
+  
+  <gazebo reference="tibia_RL">
+    <!-- 添加吸盘视觉和碰撞元素 -->
+    <collision name="suction_collision_RL">
+      <pose>0.31 0 0 0 0 0</pose>
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+    </collision>
+    <visual name="suction_visual_RL">
+      <pose>0.31 0 0 0 0 0</pose>
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/HighFriction</name>
+        </script>
+      </material>
+    </visual>
+    <!-- 真空吸盘插件 -->
+    <plugin name="gazebo_ros_vacuum_gripper_RL" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/sizu</robotNamespace>
+      <topicName>/sizu/suction_cup_RL/switch</topicName>
+      <bodyName>tibia_RL</bodyName>
+      <disableCollisionsOnAttach>false</disableCollisionsOnAttach>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.001</minDistance>
+      <attachForce>150.0</attachForce>
+      <attachTorque>5.0</attachTorque>
+      <suctionPosition>0.31 0 0</suctionPosition>
+      <suctionDirection>0 0 -1</suctionDirection>
+    </plugin>
+  </gazebo>
+  
+  <gazebo reference="tibia_RR">
+    <!-- 添加吸盘视觉和碰撞元素 -->
+    <collision name="suction_collision_RR">
+      <pose>0.31 0 0 0 0 0</pose>
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+    </collision>
+    <visual name="suction_visual_RR">
+      <pose>0.31 0 0 0 0 0</pose>
+      <geometry>
+        <cylinder>
+          <length>0.01</length>
+          <radius>0.02</radius>
+        </cylinder>
+      </geometry>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/HighFriction</name>
+        </script>
+      </material>
+    </visual>
+    <!-- 真空吸盘插件 -->
+    <plugin name="gazebo_ros_vacuum_gripper_RR" filename="libgazebo_ros_vacuum_gripper.so">
+      <robotNamespace>/sizu</robotNamespace>
+      <topicName>/sizu/suction_cup_RR/switch</topicName>
+      <bodyName>tibia_RR</bodyName>
+      <disableCollisionsOnAttach>false</disableCollisionsOnAttach>
+      <maxDistance>0.05</maxDistance>
+      <minDistance>0.001</minDistance>
+      <attachForce>150.0</attachForce>
+      <attachTorque>5.0</attachTorque>
+      <suctionPosition>0.31 0 0</suctionPosition>
+      <suctionDirection>0 0 -1</suctionDirection>
+    </plugin>
+  </gazebo>
+  
+  <!-- Gazebo 物理参数优化 -->
+  <gazebo>
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>100</iters>
+          <sor>1.3</sor>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100</contact_max_correcting_vel>
+          <contact_surface_layer>0.001</contact_surface_layer>
+        </constraints>
+      </ode>
+    </physics>
+  </gazebo>
+  
+</robot>

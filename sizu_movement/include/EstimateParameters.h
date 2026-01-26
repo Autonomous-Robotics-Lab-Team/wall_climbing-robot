@@ -62,7 +62,8 @@ public:
 
         double dt;//时间间隔
         double T; //步态周期
-        double loop_dt_;             // 主循环积分时间步长
+        double loop_dt_;// 主循环积分时间步长
+        double compensation_velocity;//速度补偿
 
         //机身参数
         double high_hop;//抬腿高度
@@ -74,7 +75,7 @@ public:
         void CallBack(const geometry_msgs::Twist::ConstPtr& msg);
         void ImuCb(const sensor_msgs::Imu::ConstPtr& msg);
         void GetWorldPosition();
-        void GetVelocity();
+        // void GetVelocity();
         void Get_R_world_to_body();
         int GetFeetMovePos();
         int GetFeetRotatePos();
@@ -84,14 +85,16 @@ public:
         void keyboardListenerThread();
         void mainloop();
         void UpdateTimerCb(const ros::TimerEvent& event);
-        void enableCanonicalMode();   // 启用规范模式（用于std::cin）
         void disableCanonicalMode();  // 禁用规范模式（用于键盘控制）
+
+        
 
         ros::NodeHandle nh;
         ros::Subscriber cmd_vel_sub;
         ros::Subscriber imu_sub;
         ros::Publisher parameter_pub;
         ros::Publisher odom_pub;
+    
         geometry_msgs::TransformStamped odom_TF;
         nav_msgs::Odometry odom;
         tf::TransformBroadcaster odom_broadcaster;

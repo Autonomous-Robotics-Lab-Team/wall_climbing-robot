@@ -7,13 +7,13 @@
     <rosparam file="$(find sizu_gazebo)/config/base_local_planner_params.yaml" command="load" />
   </node>
 
-  <param name="use_sim_time" value="false"/>
+  <param name="use_sim_time" value="true"/>
 
   <include file="$(find sizu_gazebo)/launch/gazebo.launch"/>
 
   <!-- AMCL for localization: map -> odom using /scan and odom from sizu_movement -->
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
-    <remap from="scan" to="/scan" />
+    <remap from="scan" to="/sizu/scan" />
     <param name="base_frame_id" value="base_link" />
     <param name="odom_frame_id" value="odom" />
     <param name="global_frame_id" value="map" />
@@ -32,6 +32,7 @@
   </node>
  
   <node name="map_server" pkg="map_server" type="map_server" args="$(find sizu_gazebo)/map/nav.yaml" />
-
+  
+  <!-- <node pkg="sizu_movement" type="main" name="main" output="screen"/> -->
 
 </launch>

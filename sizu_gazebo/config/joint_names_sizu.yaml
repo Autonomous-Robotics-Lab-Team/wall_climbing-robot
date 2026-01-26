@@ -1,1 +1,1 @@
-controller_joint_names: ['', 'coxa_joint_FL', 'femur_joint_FL', 'tibia_joint_FL', 'foot_joint_FL', 'coxa_joint_FR', 'femur_joint_FR', 'tibia_joint_FR', 'foot_joint_FR', 'coxa_joint_RR', 'femur_joint_RR', 'tibia_joint_RR', 'foot_joint_RR', 'coxa_joint_RL', 'femur_joint_RL', 'tibia_joint_RL', 'foot_joint_RL', ]
+controller_joint_names: [ 'coxa_joint_FL', 'femur_joint_FL', 'tibia_joint_FL', 'coxa_joint_FR', 'femur_joint_FR', 'tibia_joint_FR', 'coxa_joint_RR', 'femur_joint_RR', 'tibia_joint_RR', 'coxa_joint_RL', 'femur_joint_RL', 'tibia_joint_RL']

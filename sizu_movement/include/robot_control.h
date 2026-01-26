@@ -40,6 +40,7 @@ public:
     void commandSend(Eigen::Matrix<double,3,4> All_Feet_position, std::vector<int> leg_sign);
     void stand();
     void get_parameters(double T, double dt);
+    Eigen::Matrix<double,3,1> calculateJointVelocities(const Eigen::Matrix<double,3,1>& joint_angles, const Eigen::Matrix<double,3,1>& cartesian_velocity);
     Eigen::Matrix3d computeJacobian(double theta1, double theta2, double theta3, double l1, double l2, double l3);
 
     double dt;
@@ -64,9 +65,5 @@ public:
     double box_width;
     double leg_xy;//初始位姿腿在水平面的投影长度
 };
-
-
-
-
 
 #endif

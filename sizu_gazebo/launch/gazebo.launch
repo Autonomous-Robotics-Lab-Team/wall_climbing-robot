@@ -17,28 +17,36 @@
         <arg name="headless" value="$(arg headless)"/>
     </include>    
 
-    <!-- 机器人描述 -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find sizu_gazebo)/urdf/robot.xacro' DEBUG:=$(arg user_debug)" />
+    <group ns="sizu">
+        <!-- 机器人描述 -->
+        <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find sizu_gazebo)/urdf/robot.xacro' DEBUG:=$(arg user_debug)" />
+
+        <!-- 加载控制器配置 -->
+        <rosparam command="load" file="$(find sizu_gazebo)/config/sizu_control.yaml"/> 
+        
+        <!-- 启动轨迹控制器 -->
+        <node name="controller_spawner" pkg="controller_manager" type="spawner"
+            args="joint_state_controller
+                    leg_trajectory_controller"
+            output="screen"/>
+
+        <!-- 启动轨迹控制示例节点（默认不启动；设置 run_trajectory_example:=true 可启用） -->
+        <node if="$(arg run_trajectory_example)" name="trajectory_example" pkg="sizu_gazebo" type="trajectory_example_node" output="screen"/>
+
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sizu_gazebo)/config/sizu.rviz" />
+    </group>
 
     <!-- 机器人模型注入到 Gazebo -->
-    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model sizu " />
+    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-param sizu/robot_description -urdf -model sizu -z 0.05" />
 
-    <!-- 加载控制器配置 -->
-    <rosparam command="load" file="$(find sizu_gazebo)/config/sizu_control.yaml"/> 
-    
-    <!-- 启动轨迹控制器 -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner"
-          args="joint_state_controller
-                leg_trajectory_controller"
-          output="screen"/>
-
-    <!-- 启动轨迹控制示例节点（默认不启动；设置 run_trajectory_example:=true 可启用） -->
-    <node if="$(arg run_trajectory_example)" name="trajectory_example" pkg="sizu_gazebo" type="trajectory_example_node" output="screen"/>
-
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+      <!-- 吸盘控制节点 -->
+    <!-- <node name="suction_controller" pkg="sizu_gazebo" type="suction_controller.py" output="screen" /> -->
  
+    
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sizu_gazebo)/config/sizu.rviz" />
+    
 
 </launch>
 
