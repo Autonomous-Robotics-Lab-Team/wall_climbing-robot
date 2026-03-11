@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="sizu">
+  <!-- 过渡用 base（很小的可视box，不参与物理） -->
+  <link name="map">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <geometry>
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="map_joint" type="fixed">
+    <parent link="map"/>
+    <child link="base_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <!-- 机身 base_link -->
+   <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="3.2" />
+      <inertia ixx="0.0085" ixy="0.0" ixz="0.0" iyy="0.0095" iyz="0.0" izz="0.0140" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/base_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 0.5" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.1705 0.1555 0.05"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ==================== FL Leg ==================== -->
+  <link name="coxa_FL">
+    <inertial>
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
+      <mass value="0.08" />
+      <inertia ixx="1.5e-5" ixy="0.0" ixz="0.0" iyy="5.0e-5" iyz="0.0" izz="5.0e-5" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/coxa_FL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0 -0.02" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.02" radius="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="coxa_joint_FL" type="revolute">
+    <origin xyz="0.10275 0.11525 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="coxa_FL" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-0.9" upper="0.9" effort="60" velocity="12"/>
+  </joint>
+
+  <link name="femur_FL">
+    <inertial>
+      <origin xyz="0.08 0 0" rpy="0 0 0" />
+      <mass value="0.32" />
+      <inertia ixx="8.0e-5" ixy="0.0" ixz="0.0" iyy="7.5e-4" iyz="0.0" izz="7.5e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/femur_FL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.08 0 -0.015" rpy="0 0 0" />
+      <geometry>
+        <box size="0.14 0.03 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="femur_joint_FL" type="revolute">
+    <origin xyz="0.0635321928743235 0.0437332030011003 0.0255" rpy="1.5707963267949 0 0.78539816339745" />
+    <parent link="coxa_FL" />
+    <child link="femur_FL" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-1.6" upper="1.6" effort="60" velocity="16"/>
+  </joint>
+
+  <link name="tibia_FL">
+    <inertial>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <mass value="0.16" />
+      <inertia ixx="2.0e-5" ixy="0.0" ixz="0.0" iyy="8.0e-4" iyz="0.0" izz="8.0e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/tibia_FL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.22 0.022 0.022"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="tibia_joint_FL" type="revolute">
+    <origin xyz="0.164 0 0" rpy="0 0 0" />
+    <parent link="femur_FL" />
+    <child link="tibia_FL" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-2.4" upper="2.4" effort="60" velocity="16"/>
+  </joint>
+
+  <joint name="foot_fixed_FL" type="fixed" dont_collapse="true">
+    <origin xyz="0.31 0 0" rpy="0 0 0" />
+    <parent link="tibia_FL" />
+    <child link="foot_FL" />
+  </joint>
+
+  <link name="foot_FL">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.03" />
+      <inertia ixx="4.0e-6" ixy="0.0" ixz="0.0" iyy="4.0e-6" iyz="0.0" izz="4.0e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+
+  <!-- ==================== RL Leg ==================== -->
+  <link name="coxa_RL">
+    <inertial>
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
+      <mass value="0.08" />
+      <inertia ixx="1.5e-5" ixy="0.0" ixz="0.0" iyy="5.0e-5" iyz="0.0" izz="5.0e-5" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/coxa_RL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0 -0.02" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.02" radius="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="coxa_joint_RL" type="revolute">
+    <origin xyz="-0.10275 0.11525 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="coxa_RL" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-0.9" upper="0.9" effort="60" velocity="12"/>
+  </joint>
+
+  <link name="femur_RL">
+    <inertial>
+      <origin xyz="0.08 0 0" rpy="0 0 0" />
+      <mass value="0.32" />
+      <inertia ixx="8.0e-5" ixy="0.0" ixz="0.0" iyy="7.5e-4" iyz="0.0" izz="7.5e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/femur_RL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.08 0 -0.015" rpy="0 0 0" />
+      <geometry>
+        <box size="0.14 0.03 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="femur_joint_RL" type="revolute">
+    <origin xyz="-0.0635321928743236 0.0437332030011001 0.0255" rpy="-1.5707963267949 0 2.35619449019235" />
+    <parent link="coxa_RL" />
+    <child link="femur_RL" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-1.6" upper="1.6" effort="60" velocity="16"/>
+  </joint>
+
+  <link name="tibia_RL">
+    <inertial>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <mass value="0.16" />
+      <inertia ixx="2.0e-5" ixy="0.0" ixz="0.0" iyy="8.0e-4" iyz="0.0" izz="8.0e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/tibia_RL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.22 0.022 0.022"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="tibia_joint_RL" type="revolute">
+    <origin xyz="0.164 0 0" rpy="0 0 0" />
+    <parent link="femur_RL" />
+    <child link="tibia_RL" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-2.4" upper="2.4" effort="60" velocity="16"/>
+  </joint>
+
+  <joint name="foot_fixed_RL" type="fixed" dont_collapse="true">
+    <origin xyz="0.31 0 0" rpy="0 0 0" />
+    <parent link="tibia_RL" />
+    <child link="foot_RL" />
+  </joint>
+
+  <link name="foot_RL">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.03" />
+      <inertia ixx="4.0e-6" ixy="0.0" ixz="0.0" iyy="4.0e-6" iyz="0.0" izz="4.0e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ==================== FR Leg ==================== -->
+  <link name="coxa_FR">
+    <inertial>
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
+      <mass value="0.08" />
+      <inertia ixx="1.5e-5" ixy="0.0" ixz="0.0" iyy="5.0e-5" iyz="0.0" izz="5.0e-5" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/coxa_FR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0 -0.02" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.02" radius="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="coxa_joint_FR" type="revolute">
+    <origin xyz="0.10275 -0.11525 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="coxa_FR" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-0.9" upper="0.9" effort="60" velocity="12"/>
+  </joint>
+
+  <link name="femur_FR">
+    <inertial>
+      <origin xyz="0.08 0 0" rpy="0 0 0" />
+      <mass value="0.32" />
+      <inertia ixx="8.0e-5" ixy="0.0" ixz="0.0" iyy="7.5e-4" iyz="0.0" izz="7.5e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/femur_FR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.08 0 -0.015" rpy="0 0 0" />
+      <geometry>
+        <box size="0.14 0.03 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="femur_joint_FR" type="revolute">
+    <origin xyz="0.0635321928743236 -0.0437332030011001 0.0255000000000001" rpy="-1.5707963267949 0 -0.785398163397447" />
+    <parent link="coxa_FR" />
+    <child link="femur_FR" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-1.6" upper="1.6" effort="60" velocity="16"/>
+  </joint>
+
+  <link name="tibia_FR">
+    <inertial>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <mass value="0.16" />
+      <inertia ixx="2.0e-5" ixy="0.0" ixz="0.0" iyy="8.0e-4" iyz="0.0" izz="8.0e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/tibia_FR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.22 0.022 0.022"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="tibia_joint_FR" type="revolute">
+    <origin xyz="0.164 0 0" rpy="0 0 0" />
+    <parent link="femur_FR" />
+    <child link="tibia_FR" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-2.4" upper="2.4" effort="60" velocity="16"/>
+  </joint>
+
+  <joint name="foot_fixed_FR" type="fixed" dont_collapse="true">
+    <origin xyz="0.31 0 0" rpy="0 0 0" />
+    <parent link="tibia_FR" />
+    <child link="foot_FR" />
+  </joint>
+
+  <link name="foot_FR">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.03" />
+      <inertia ixx="4.0e-6" ixy="0.0" ixz="0.0" iyy="4.0e-6" iyz="0.0" izz="4.0e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ==================== RR Leg ==================== -->
+  <link name="coxa_RR">
+    <inertial>
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
+      <mass value="0.08" />
+      <inertia ixx="1.5e-5" ixy="0.0" ixz="0.0" iyy="5.0e-5" iyz="0.0" izz="5.0e-5" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/coxa_RR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0 -0.02" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.02" radius="0.02"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="coxa_joint_RR" type="revolute">
+    <origin xyz="-0.10275 -0.11525 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="coxa_RR" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-0.9" upper="0.9" effort="60" velocity="12"/>
+  </joint>
+
+  <link name="femur_RR">
+    <inertial>
+      <origin xyz="0.08 0 0" rpy="0 0 0" />
+      <mass value="0.32" />
+      <inertia ixx="8.0e-5" ixy="0.0" ixz="0.0" iyy="7.5e-4" iyz="0.0" izz="7.5e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/femur_RR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.08 0 -0.015" rpy="0 0 0" />
+      <geometry>
+        <box size="0.14 0.03 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="femur_joint_RR" type="revolute">
+    <origin xyz="-0.0635321928743236 -0.0437332030011001 0.0255" rpy="1.5707963267949 0 -2.35619449019235" />
+    <parent link="coxa_RR" />
+    <child link="femur_RR" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-1.6" upper="1.6" effort="60" velocity="16"/>
+  </joint>
+
+  <link name="tibia_RR">
+    <inertial>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <mass value="0.16" />
+      <inertia ixx="2.0e-5" ixy="0.0" ixz="0.0" iyy="8.0e-4" iyz="0.0" izz="8.0e-4" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sizu_gazebo/meshes/tibia_RR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.16 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.22 0.022 0.022"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="tibia_joint_RR" type="revolute">
+    <origin xyz="0.164 0 0" rpy="0 0 0" />
+    <parent link="femur_RR" />
+    <child link="tibia_RR" />
+    <axis xyz="0 0 -1" />
+    <dynamics damping="0.2" friction="0.02" />
+    <limit lower="-2.4" upper="2.4" effort="60" velocity="16"/>
+  </joint>
+
+  <joint name="foot_fixed_RR" type="fixed" dont_collapse="true">
+    <origin xyz="0.31 0 0" rpy="0 0 0" />
+    <parent link="tibia_RR" />
+    <child link="foot_RR" />
+  </joint>
+
+  <link name="foot_RR">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.03" />
+      <inertia ixx="4.0e-6" ixy="0.0" ixz="0.0" iyy="4.0e-6" iyz="0.0" izz="4.0e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+</robot>
