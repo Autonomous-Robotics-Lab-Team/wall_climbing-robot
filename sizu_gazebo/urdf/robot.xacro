@@ -1,13 +1,12 @@
 <robot name="sizu" xmlns:xacro="http://wiki.ros.org/xacro">
     <xacro:include filename="sizu.urdf.xacro" />
     <xacro:include filename="sizu_transmission.xacro" />
-    <xacro:include filename="adhesion.xacro" />
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
             <robotNamespace>/sizu</robotNamespace>
             <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
         </plugin>
-        <plugin name="collision_visualizer" filename="libcollision_map_creator.so"/>
+        <!-- <plugin name="collision_visualizer" filename="libcollision_map_creator.so"/> -->
         <!-- Gazebo专用标签 -->
         <collision>
          <surface>
@@ -19,25 +18,7 @@
          </surface>
         </collision>
     </gazebo>
-    <gazebo reference="tibia_FL">
-      <mu1>1</mu1>
-      <mu2>1</mu2>
-    </gazebo>
-
-    <gazebo reference="tibia_RL">
-      <mu1>1</mu1>
-      <mu2>1</mu2>
-    </gazebo>
-
-    <gazebo reference="tibia_FR">
-      <mu1>1</mu1>
-      <mu2>1</mu2>
-    </gazebo>
-
-    <gazebo reference="tibia_RR">
-      <mu1>1</mu1>
-      <mu2>1</mu2>
-    </gazebo>
+    
 
     <gazebo reference="lidar_link">
     <sensor type="ray" name="rplidar">
@@ -70,5 +51,34 @@
       </plugin>
     </sensor>
   </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_FL">
+      <bodyName>tibia_FL</bodyName>
+      <topicName>/apply_force/tibia_FL</topicName>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_FR">
+      <bodyName>tibia_FR</bodyName>
+      <topicName>/apply_force/tibia_FR</topicName>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_RL">
+      <bodyName>tibia_RL</bodyName>
+      <topicName>/apply_force/tibia_RL</topicName>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_RR">
+      <bodyName>tibia_RR</bodyName>
+      <topicName>/apply_force/tibia_RR</topicName>
+    </plugin>
+  </gazebo>
+
 
 </robot>

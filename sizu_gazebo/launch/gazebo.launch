@@ -1,7 +1,7 @@
 <launch>
     <arg name="paused" default="false"/>
     <arg name="user_debug" default="false"/>
-    <arg name="wname" default="move_base"/>
+    <arg name="wname" default="earth"/>
     <arg name="use_sim_time" default="true"/>
     <arg name="gui" default="true"/>
     <arg name="headless" default="false"/>
@@ -39,7 +39,8 @@
     </group>
 
     <!-- 机器人模型注入到 Gazebo -->
-    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-param sizu/robot_description -urdf -model sizu -z 0.05" />
+    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-param sizu/robot_description -urdf -model sizu -z 0.22" />
+
 
       <!-- 吸盘控制节点 -->
     <!-- <node name="suction_controller" pkg="sizu_gazebo" type="suction_controller.py" output="screen" /> -->
