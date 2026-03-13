@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="sizu">
+  
+  <xacro:macro name="transmission" params="joint_name">
+    <transmission name="${joint_name}_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${joint_name}">
+        <!-- Use PositionJointInterface so position controllers can control these joints -->
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${joint_name}_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+
+  <!-- 5. 生成所有关节的传动 -->
+  <xacro:transmission joint_name="coxa_joint_FL"/>
+  <xacro:transmission joint_name="coxa_joint_RL"/>
+  <xacro:transmission joint_name="coxa_joint_FR"/>
+  <xacro:transmission joint_name="coxa_joint_RR"/>
+  <xacro:transmission joint_name="femur_joint_FL"/>
+  <xacro:transmission joint_name="femur_joint_RL"/>
+  <xacro:transmission joint_name="femur_joint_FR"/>
+  <xacro:transmission joint_name="femur_joint_RR"/>
+  <xacro:transmission joint_name="tibia_joint_FL"/>
+  <xacro:transmission joint_name="tibia_joint_RL"/>
+  <xacro:transmission joint_name="tibia_joint_FR"/>
+  <xacro:transmission joint_name="tibia_joint_RR"/>
+
+</robot>
