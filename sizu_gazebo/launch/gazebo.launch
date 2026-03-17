@@ -39,7 +39,15 @@
     </group>
 
     <!-- 机器人模型注入到 Gazebo -->
-    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-param sizu/robot_description -urdf -model sizu -z 0.22" />  
+    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-param sizu/robot_description -urdf -model sizu -z 0.05" />
+
+
+      <!-- 吸盘控制节点 -->
+    <!-- <node name="suction_controller" pkg="sizu_gazebo" type="suction_controller.py" output="screen" /> -->
+ 
+    
+
+    
 
 </launch>
 

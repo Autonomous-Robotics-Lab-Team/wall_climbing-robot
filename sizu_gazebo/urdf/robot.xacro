@@ -52,6 +52,33 @@
     </sensor>
   </gazebo>
 
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_FL">
+      <bodyName>tibia_FL</bodyName>
+      <topicName>/apply_force/tibia_FL</topicName>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_FR">
+      <bodyName>tibia_FR</bodyName>
+      <topicName>/apply_force/tibia_FR</topicName>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_RL">
+      <bodyName>tibia_RL</bodyName>
+      <topicName>/apply_force/tibia_RL</topicName>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force_tibia_RR">
+      <bodyName>tibia_RR</bodyName>
+      <topicName>/apply_force/tibia_RR</topicName>
+    </plugin>
+  </gazebo>
 
 
 </robot>
